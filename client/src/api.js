@@ -1,24 +1,209 @@
-const API_BASE = "http://localhost:3001/api";
+import io from "socket.io-client";
 
-export async function ingestMessage(text) {
-  const res = await fetch(`${API_BASE}/ingest`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
-  });
-  return res.json();
+const API_BASE_URL = "http://localhost:3000";
+
+// Initialize WebSocket connection
+let socket = null;
+
+// Generate or retrieve customer ID (persists across page reloads)
+function getCustomerId() {
+  let customerId = localStorage.getItem("customerId");
+  if (!customerId) {
+    // Generate a unique customer ID
+    customerId = `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("customerId", customerId);
+  }
+  return customerId;
 }
 
+export function initializeSocket() {
+  if (socket) return socket;
+
+  socket = io(API_BASE_URL, {
+    transports: ["websocket"],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+
+  socket.on("connect", () => {
+    console.log("[WebSocket] Connected to server");
+    socket.emit("agent_join");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("[WebSocket] Disconnected from server");
+  });
+
+  return socket;
+}
+
+export function getSocket() {
+  if (!socket) {
+    return initializeSocket();
+  }
+  return socket;
+}
+
+// API FUNCTIONS
+
+/**
+ * Fetch all conversations for the inbox
+ */
 export async function fetchConversations() {
-  const res = await fetch(`${API_BASE}/conversations`);
-  return res.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/conversations`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
+    return [];
+  }
 }
 
-export async function sendReply(conversationId, agentText) {
-  const res = await fetch(`${API_BASE}/reply`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ conversationId, agentText }),
-  });
-  return res.json();
+/**
+ * Fetch a single conversation by ID
+ */
+export async function fetchConversation(conversationId) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/conversations/${conversationId}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching conversation:", error);
+    throw error;
+  }
+}
+
+/**
+ * Send an agent reply
+ */
+export async function sendReply(conversationId, text) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/conversations/${conversationId}/reply`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error sending reply:", error);
+    throw error;
+  }
+}
+
+/**
+ * Ingest a customer message
+ * Automatically includes customer ID for conversation tracking
+ */
+export async function ingestMessage(text) {
+  try {
+    const customerId = getCustomerId();
+    const response = await fetch(`${API_BASE_URL}/api/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Customer-Id": customerId,
+      },
+      body: JSON.stringify({ text, customerId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error ingesting message:", error);
+    throw error;
+  }
+}
+
+/**
+ * Start a new conversation (clear existing session)
+ */
+export async function startNewConversation() {
+  try {
+    const customerId = getCustomerId();
+
+    const response = await fetch(`${API_BASE_URL}/api/conversations/new`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Customer-Id": customerId,
+      },
+      body: JSON.stringify({ customerId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Clear local conversation ID to start fresh
+    localStorage.removeItem("customerConversationId");
+
+    return data;
+  } catch (error) {
+    console.error("Error starting new conversation:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get current customer ID
+ */
+export function getCurrentCustomerId() {
+  return getCustomerId();
+}
+
+// WEBSOCKET EVENT LISTENERS
+
+/**
+ * Listen for new messages in any conversation
+ * @param {Function} callback - Called with { conversationId, message }
+ */
+export function onNewMessage(callback) {
+  const socket = getSocket();
+  socket.on("new_message", callback);
+
+  // Return cleanup function
+  return () => socket.off("new_message", callback);
+}
+
+/**
+ * Listen for conversation list updates
+ * @param {Function} callback - Called with updated conversation data
+ */
+export function onConversationUpdated(callback) {
+  const socket = getSocket();
+  socket.on("conversation_updated", callback);
+
+  // Return cleanup function
+  return () => socket.off("conversation_updated", callback);
 }
