@@ -10,7 +10,7 @@ export default function ReplyBox({ conversationId, onReplySent }) {
 
     setIsSending(true);
     try {
-      await sendReply(conversationId, text);
+      const response = await sendReply(conversationId, text);
       if (response.message && onReplySent) {
         onReplySent(response.message);
       }
