@@ -4,6 +4,7 @@ import {
   getLastMessagePreview,
   conversations,
   customerSessions,
+  saveConversations,
 } from "../utils/utils.js";
 
 const router = express.Router();
@@ -98,6 +99,8 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       conversation.messages.push(message);
       conversation.updatedAt = new Date();
 
+      await saveConversations();
+
       // Step 5: Emit to connected agent clients via WebSocket
       io.to("agents").emit("new_message", {
         conversationId: conversation.id,
@@ -173,6 +176,8 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
 
       conversation.messages.push(message);
       conversation.updatedAt = new Date();
+
+      await saveConversations();
 
       // Step 3: Emit to connected clients
       io.to(`customer-${conversation.customerId}`).emit("agent_reply", {

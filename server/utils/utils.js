@@ -1,3 +1,12 @@
+import fs from "fs/promises";
+import path from "path";
+
+const CONVERSATIONS_FILE = path.join(
+  process.cwd(),
+  "data",
+  "conversations.json",
+);
+
 /**
  * Conversation structure:
  * {
@@ -18,7 +27,73 @@
  */
 export const conversations = new Map();
 export const customerSessions = new Map(); // Track customer -> conversation mapping
-let conversationIdCounter = 1;
+export let conversationIdCounter = 1;
+
+/**
+ * Load conversations from file on server start
+ */
+export async function loadConversations() {
+  try {
+    // Create data directory if it doesn't exist
+    await fs.mkdir(path.dirname(CONVERSATIONS_FILE), { recursive: true });
+
+    const data = await fs.readFile(CONVERSATIONS_FILE, "utf-8");
+    const saved = JSON.parse(data);
+
+    // Restore conversations to Map
+    saved.conversations.forEach((conv) => {
+      // Convert date strings back to Date objects
+      conv.createdAt = new Date(conv.createdAt);
+      conv.updatedAt = new Date(conv.updatedAt);
+      conv.messages.forEach((msg) => {
+        msg.timestamp = new Date(msg.timestamp);
+      });
+
+      conversations.set(conv.id, conv);
+    });
+
+    // Restore customer sessions
+    Object.entries(saved.customerSessions).forEach(([customerId, convId]) => {
+      customerSessions.set(customerId, convId);
+    });
+
+    // Restore counter
+    if (saved.conversationIdCounter) {
+      conversationIdCounter = saved.conversationIdCounter;
+    }
+
+    console.log(
+      `[Persistence] Loaded ${conversations.size} conversations from disk`,
+    );
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.log("[Persistence] No saved conversations found, starting fresh");
+    } else {
+      console.error("[Persistence] Error loading conversations:", error);
+    }
+  }
+}
+
+/**
+ * Save conversations to file
+ */
+export async function saveConversations() {
+  try {
+    const data = {
+      conversations: Array.from(conversations.values()),
+      customerSessions: Object.fromEntries(customerSessions),
+      conversationIdCounter: conversationIdCounter,
+      savedAt: new Date().toISOString(),
+    };
+
+    await fs.writeFile(CONVERSATIONS_FILE, JSON.stringify(data, null, 2));
+    console.log(
+      `[Persistence] Saved ${conversations.size} conversations to disk`,
+    );
+  } catch (error) {
+    console.error("[Persistence] Error saving conversations:", error);
+  }
+}
 
 // Helper function to find or create conversation for a customer
 export function findOrCreateConversation(customerId, detectedLocale) {

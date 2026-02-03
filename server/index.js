@@ -5,6 +5,7 @@ import { LingoDotDevEngine } from "lingo.dev/sdk";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 import conversationsRoutes from "./routes/conversations.js";
+import { loadConversations } from "./utils/utils.js";
 
 dotenv.config();
 
@@ -51,6 +52,8 @@ io.on("connection", (socket) => {
   });
 });
 
+await loadConversations();
+
 // Start the server
 server.listen(PORT, () => {
   console.log(`
@@ -60,6 +63,8 @@ server.listen(PORT, () => {
 
 Server running on: http://localhost:${PORT}
 Client origin:     ${CLIENT_ORIGIN}
+
+Loaded conversations from disk
 
 API Endpoints:
   GET  /api/conversations          - List all conversations
