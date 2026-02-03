@@ -99,12 +99,12 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       conversation.updatedAt = new Date();
 
       // Step 5: Emit to connected agent clients via WebSocket
-      io.emit("new_message", {
+      io.to("agents").emit("new_message", {
         conversationId: conversation.id,
         message,
       });
 
-      io.emit("conversation_updated", {
+      io.to("agents").emit("conversation_updated", {
         id: conversation.id,
         language: conversation.language,
         lastMessage: getLastMessagePreview(conversation),
@@ -175,7 +175,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       conversation.updatedAt = new Date();
 
       // Step 3: Emit to connected clients
-      io.emit("new_message", {
+      io.to(`customer-${conversation.customerId}`).emit("agent_reply", {
         conversationId: conversation.id,
         message,
       });

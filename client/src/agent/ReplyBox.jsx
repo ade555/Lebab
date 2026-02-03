@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { sendReply } from "../api";
 
-export default function ReplyBox({ conversationId }) {
+export default function ReplyBox({ conversationId, onReplySent }) {
   const [text, setText] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -11,6 +11,9 @@ export default function ReplyBox({ conversationId }) {
     setIsSending(true);
     try {
       await sendReply(conversationId, text);
+      if (response.message && onReplySent) {
+        onReplySent(response.message);
+      }
       setText("");
     } finally {
       setIsSending(false);

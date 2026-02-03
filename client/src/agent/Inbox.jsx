@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   fetchConversations,
-  initializeSocket,
+  initializeAgentSocket,
   onConversationUpdated,
 } from "../api";
 import Conversation from "./Conversation";
@@ -13,7 +13,7 @@ export default function Inbox() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    initializeSocket();
+    initializeAgentSocket();
 
     // Initial load
     loadConversations();
@@ -43,7 +43,7 @@ export default function Inbox() {
     });
 
     return cleanup;
-  }, []);
+  }, [activeId]);
 
   async function loadConversations() {
     setIsLoading(true);

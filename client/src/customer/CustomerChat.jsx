@@ -3,7 +3,7 @@ import {
   ingestMessage,
   fetchConversation,
   onNewMessage,
-  initializeSocket,
+  initializeCustomerSocket,
   startNewConversation,
   getCurrentCustomerId,
 } from "../api";
@@ -24,7 +24,7 @@ export default function CustomerChat() {
 
   useEffect(() => {
     // Initialize WebSocket
-    initializeSocket();
+    const socket = initializeCustomerSocket();
 
     // Get customer ID
     const id = getCurrentCustomerId();
@@ -38,8 +38,8 @@ export default function CustomerChat() {
       loadConversation(savedConvId);
     }
 
-    // Listen for new messages (agent replies)
-    const cleanup = onNewMessage(({ conversationId: msgConvId, message }) => {
+    // Listen for agent replies
+    socket.on("agent_reply", ({ conversationId: msgConvId, message }) => {
       const currentConvId = localStorage.getItem("customerConversationId");
       if (msgConvId === currentConvId) {
         setMessages((prev) => [...prev, message]);
@@ -47,7 +47,10 @@ export default function CustomerChat() {
       }
     });
 
-    return cleanup;
+    // Cleanup
+    return () => {
+      socket.off("agent_reply");
+    };
   }, []);
 
   useEffect(() => {
@@ -78,6 +81,10 @@ export default function CustomerChat() {
         localStorage.setItem("customerConversationId", newConvId);
         // Note: conversationId should stay the same for subsequent messages
         // The backend tracks this by customerId
+      }
+
+      if (response.message) {
+        setMessages((prev) => [...prev, response.message]);
       }
       setText("");
       setTimeout(scrollToBottom, 100);

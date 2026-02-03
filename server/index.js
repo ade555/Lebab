@@ -35,9 +35,12 @@ app.use(
 
 // Websocket events
 io.on("connection", (socket) => {
-  console.log("[WebSocket] Client connected:", socket.id);
-
-  // Agent joins to receive real-time updates
+  // Handle join events for customers and agents
+  socket.on("customer_join", (customerId) => {
+    console.log("[WebSocket] Customer joined:", socket.id, customerId);
+    socket.join("customers");
+    socket.join(`customer-${customerId}`);
+  });
   socket.on("agent_join", () => {
     console.log("[WebSocket] Agent joined:", socket.id);
     socket.join("agents");

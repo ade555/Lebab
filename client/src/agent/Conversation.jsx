@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { fetchConversation, onNewMessage } from "../api";
+import { fetchConversation, onNewMessage, getAgentSocket } from "../api";
 import ReplyBox from "./ReplyBox";
 
 export default function Conversation({ conversationId }) {
@@ -14,6 +14,7 @@ export default function Conversation({ conversationId }) {
   };
 
   useEffect(() => {
+    const socket = getAgentSocket();
     // Load conversation messages
     async function load() {
       setIsLoading(true);
@@ -30,12 +31,15 @@ export default function Conversation({ conversationId }) {
     load();
 
     // Listen for real-time new messages
-    const cleanup = onNewMessage(({ conversationId: msgConvId, message }) => {
-      if (msgConvId === conversationId) {
-        setMessages((prev) => [...prev, message]);
-        setTimeout(scrollToBottom, 100);
-      }
-    });
+    const cleanup = onNewMessage(
+      socket,
+      ({ conversationId: msgConvId, message }) => {
+        if (msgConvId === conversationId) {
+          setMessages((prev) => [...prev, message]);
+          setTimeout(scrollToBottom, 100);
+        }
+      },
+    );
 
     return cleanup;
   }, [conversationId]);
@@ -49,6 +53,11 @@ export default function Conversation({ conversationId }) {
       ...prev,
       [index]: !prev[index],
     }));
+  };
+
+  const handleReplySent = (message) => {
+    setMessages((prev) => [...prev, message]);
+    setTimeout(scrollToBottom, 100);
   };
 
   return (
@@ -214,7 +223,10 @@ export default function Conversation({ conversationId }) {
 
       {/* Reply Box */}
       <div className="bg-white border-t border-slate-200">
-        <ReplyBox conversationId={conversationId} />
+        <ReplyBox
+          conversationId={conversationId}
+          onReplySent={handleReplySent}
+        />
       </div>
 
       <style jsx>{`

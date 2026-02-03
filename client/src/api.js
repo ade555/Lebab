@@ -1,9 +1,12 @@
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
 const API_BASE_URL = "http://localhost:3000";
 
 // Initialize WebSocket connection
 let socket = null;
+
+let agentSocket = null;
+let customerSocket = null;
 
 // Generate or retrieve customer ID (persists across page reloads)
 function getCustomerId() {
@@ -16,33 +19,62 @@ function getCustomerId() {
   return customerId;
 }
 
-export function initializeSocket() {
-  if (socket) return socket;
+export function initializeAgentSocket() {
+  if (agentSocket) return agentSocket;
 
-  socket = io(API_BASE_URL, {
+  agentSocket = io(API_BASE_URL, {
     transports: ["websocket"],
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
   });
 
-  socket.on("connect", () => {
+  agentSocket.on("connect", () => {
     console.log("[WebSocket] Connected to server");
-    socket.emit("agent_join");
+    agentSocket.emit("agent_join");
   });
 
-  socket.on("disconnect", () => {
+  agentSocket.on("disconnect", () => {
     console.log("[WebSocket] Disconnected from server");
   });
 
-  return socket;
+  return agentSocket;
 }
 
-export function getSocket() {
-  if (!socket) {
-    return initializeSocket();
+export function initializeCustomerSocket() {
+  if (customerSocket) return customerSocket;
+  customerSocket = io(API_BASE_URL, {
+    transports: ["websocket"],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+
+  customerSocket.on("connect", () => {
+    console.log("[WebSocket] Connected to server");
+    const customerId = getCustomerId();
+    customerSocket.emit("customer_join", customerId);
+  });
+
+  customerSocket.on("disconnect", () => {
+    console.log("[WebSocket] Disconnected from server");
+  });
+
+  return customerSocket;
+}
+
+export function getAgentSocket() {
+  if (!agentSocket) {
+    initializeAgentSocket();
   }
-  return socket;
+  return agentSocket;
+}
+
+export function getCustomerSocket() {
+  if (!customerSocket) {
+    initializeCustomerSocket();
+  }
+  return customerSocket;
 }
 
 // API FUNCTIONS
@@ -188,8 +220,7 @@ export function getCurrentCustomerId() {
  * Listen for new messages in any conversation
  * @param {Function} callback - Called with { conversationId, message }
  */
-export function onNewMessage(callback) {
-  const socket = getSocket();
+export function onNewMessage(socket, callback) {
   socket.on("new_message", callback);
 
   // Return cleanup function
@@ -201,9 +232,21 @@ export function onNewMessage(callback) {
  * @param {Function} callback - Called with updated conversation data
  */
 export function onConversationUpdated(callback) {
-  const socket = getSocket();
+  const socket = getAgentSocket();
   socket.on("conversation_updated", callback);
 
   // Return cleanup function
   return () => socket.off("conversation_updated", callback);
+}
+
+/**
+ * Listen for agent replies (customer side)
+ * @param {Function} callback - Called with { conversationId, message }
+ */
+export function onAgentReply(callback) {
+  const socket = getCustomerSocket();
+  socket.on("agent_reply", callback);
+
+  // Return cleanup function
+  return () => socket.off("agent_reply", callback);
 }
