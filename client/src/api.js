@@ -148,6 +148,85 @@ export async function sendReply(conversationId, text) {
 }
 
 /**
+ * Customer ends conversation
+ */
+export async function endConversation(conversationId) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/conversations/${conversationId}/end-customer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error ending conversation:", error);
+    throw error;
+  }
+}
+
+/**
+ * Agent resolves conversation
+ */
+export async function resolveConversation(conversationId) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/conversations/${conversationId}/resolve`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error resolving conversation:", error);
+    throw error;
+  }
+}
+
+/**
+ * Agent escalates conversation
+ */
+export async function escalateConversation(conversationId, reason) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/conversations/${conversationId}/escalate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reason }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error ending conversation:", error);
+    throw error;
+  }
+}
+
+/**
  * Ingest a customer message
  * Automatically includes customer ID for conversation tracking
  */
@@ -249,4 +328,22 @@ export function onAgentReply(callback) {
 
   // Return cleanup function
   return () => socket.off("agent_reply", callback);
+}
+
+/**
+ * Listen for conversation ended event (customer side)
+ */
+export function onConversationEnded(callback) {
+  const socket = getCustomerSocket();
+  socket.on("conversation_ended", callback);
+  return () => socket.off("conversation_ended", callback);
+}
+
+/**
+ * Listen for conversation escalated event (customer side)
+ */
+export function onConversationEscalated(callback) {
+  const socket = getCustomerSocket();
+  socket.on("conversation_escalated", callback);
+  return () => socket.off("conversation_escalated", callback);
 }

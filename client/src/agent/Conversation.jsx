@@ -1,11 +1,19 @@
 import { useEffect, useState, useRef } from "react";
-import { fetchConversation, onNewMessage, getAgentSocket } from "../api";
+import {
+  fetchConversation,
+  onNewMessage,
+  getAgentSocket,
+  resolveConversation,
+  escalateConversation,
+} from "../api";
 import ReplyBox from "./ReplyBox";
 
-export default function Conversation({ conversationId }) {
+export default function Conversation({ conversationId, onClose }) {
   const [messages, setMessages] = useState([]);
   const [showOriginal, setShowOriginal] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [conversationStatus, setConversationStatus] = useState("active");
+  const [conversationData, setConversationData] = useState(null);
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -21,6 +29,8 @@ export default function Conversation({ conversationId }) {
       try {
         const data = await fetchConversation(conversationId);
         setMessages(data.messages);
+        setConversationStatus(data.status || "active");
+        setConversationData(data);
       } catch (error) {
         console.error("Error loading conversation:", error);
       } finally {
@@ -29,6 +39,14 @@ export default function Conversation({ conversationId }) {
     }
 
     load();
+
+    // Listen for customer ending conversation
+    socket.on("conversation_ended", ({ conversationId: endedId, closedBy }) => {
+      if (endedId === conversationId && closedBy === "customer") {
+        setConversationStatus("resolved");
+        alert("Customer has ended this conversation.");
+      }
+    });
 
     // Listen for real-time new messages
     const cleanup = onNewMessage(
@@ -41,7 +59,10 @@ export default function Conversation({ conversationId }) {
       },
     );
 
-    return cleanup;
+    return () => {
+      cleanup();
+      socket.off("conversation_ended");
+    };
   }, [conversationId]);
 
   useEffect(() => {
@@ -55,6 +76,31 @@ export default function Conversation({ conversationId }) {
     }));
   };
 
+  const handleResolve = async () => {
+    const confirmed = window.confirm("Mark this conversation as resolved?");
+    if (!confirmed) return;
+
+    try {
+      await resolveConversation(conversationId);
+      setConversationStatus("resolved");
+    } catch (error) {
+      console.error("Error resolving conversation:", error);
+      alert("Failed to resolve conversation.");
+    }
+  };
+
+  const handleEscalate = async () => {
+    const reason = prompt("Enter escalation reason (optional):");
+
+    try {
+      await escalateConversation(conversationId, reason);
+      setConversationStatus("escalated");
+    } catch (error) {
+      console.error("Error escalating conversation:", error);
+      alert("Failed to escalate conversation.");
+    }
+  };
+
   const handleReplySent = (message) => {
     setMessages((prev) => [...prev, message]);
     setTimeout(scrollToBottom, 100);
@@ -66,12 +112,94 @@ export default function Conversation({ conversationId }) {
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
+            {/* Back button */}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              title="Back to inbox"
+            >
+              <svg
+                className="w-5 h-5 text-slate-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+
             <h2 className="text-lg font-semibold text-slate-900">
               Conversation
             </h2>
             <p className="text-sm text-slate-500">
               All messages automatically translated
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${
+                conversationStatus === "active"
+                  ? "bg-green-50 border-green-200"
+                  : conversationStatus === "escalated"
+                    ? "bg-yellow-50 border-yellow-200"
+                    : "bg-slate-100 border-slate-200"
+              }`}
+            >
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  conversationStatus === "active"
+                    ? "bg-green-500 animate-pulse"
+                    : conversationStatus === "escalated"
+                      ? "bg-yellow-500"
+                      : "bg-slate-400"
+                }`}
+              />
+              <span
+                className={`text-xs font-medium capitalize ${
+                  conversationStatus === "active"
+                    ? "text-green-700"
+                    : conversationStatus === "escalated"
+                      ? "text-yellow-700"
+                      : "text-slate-700"
+                }`}
+              >
+                {conversationStatus === "active" && "Active query"}
+                {conversationStatus === "escalated" && "Escalated"}
+                {conversationStatus === "resolved" && "Resolved"}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            {conversationStatus === "active" && (
+              <>
+                <button
+                  onClick={handleEscalate}
+                  className="text-xs px-3 py-1.5 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-700 rounded-lg font-medium transition-colors"
+                >
+                  Escalate
+                </button>
+                <button
+                  onClick={handleResolve}
+                  className="text-xs px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-lg font-medium transition-colors"
+                >
+                  Resolve
+                </button>
+              </>
+            )}
+
+            {conversationStatus === "escalated" && (
+              <button
+                onClick={handleResolve}
+                className="text-xs px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-lg font-medium transition-colors"
+              >
+                Mark as Resolved
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
@@ -221,12 +349,35 @@ export default function Conversation({ conversationId }) {
         </div>
       </div>
 
-      {/* Reply Box */}
+      {/* Reply Box - Conditionally render based on status */}
       <div className="bg-white border-t border-slate-200">
-        <ReplyBox
-          conversationId={conversationId}
-          onReplySent={handleReplySent}
-        />
+        {conversationStatus === "resolved" ? (
+          <div className="p-4 max-w-3xl mx-auto w-full text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg">
+              <svg
+                className="w-5 h-5 text-slate-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-sm font-medium text-slate-700">
+                This conversation has been resolved
+              </span>
+            </div>
+          </div>
+        ) : (
+          <ReplyBox
+            conversationId={conversationId}
+            onReplySent={handleReplySent}
+          />
+        )}
       </div>
 
       <style jsx>{`

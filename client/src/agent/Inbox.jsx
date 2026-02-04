@@ -49,11 +49,11 @@ export default function Inbox() {
     setIsLoading(true);
     const data = await fetchConversations();
     setConversations(data);
-    if (!activeId && data.length) {
-      setActiveId(data[0].id);
-    }
     setIsLoading(false);
   }
+  const handleCloseConversation = () => {
+    setActiveId(null);
+  };
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -78,7 +78,7 @@ export default function Inbox() {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900">Polyglot</h1>
+              <h1 className="text-lg font-bold text-slate-900">Lebab</h1>
               <p className="text-xs text-slate-500">Agent Workspace</p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function Inbox() {
           <div className="p-3">
             <div className="flex items-center justify-between mb-3 px-2">
               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Active Chats
+                Tickets
               </h2>
               <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
                 {conversations.length}
@@ -174,6 +174,18 @@ export default function Inbox() {
                         >
                           {c.language.toUpperCase()} → EN
                         </span>
+                        {/* Status badge */}
+                        {c.status !== "active" && (
+                          <span
+                            className={`text-xs px-1.5 py-0.5 rounded ${
+                              c.status === "escalated"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {c.status}
+                          </span>
+                        )}
                       </div>
                       <svg
                         className={`w-4 h-4 transition-colors ${
@@ -252,7 +264,10 @@ export default function Inbox() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {activeId ? (
-          <Conversation conversationId={activeId} />
+          <Conversation
+            conversationId={activeId}
+            onClose={handleCloseConversation}
+          />
         ) : (
           <div className="flex-1 flex items-center justify-center bg-slate-50">
             <div className="text-center">

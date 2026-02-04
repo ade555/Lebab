@@ -32,7 +32,7 @@ function App() {
                 />
               </svg>
               <span className="text-xl font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                Polyglot
+                Lebab
               </span>
             </div>
           </div>

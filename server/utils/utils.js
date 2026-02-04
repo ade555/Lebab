@@ -21,8 +21,11 @@ const CONVERSATIONS_FILE = path.join(
  *       timestamp: Date
  *     }
  *   ],
+ *   status: 'active' | 'resolves' | 'escalated',
  *   createdAt: Date,
- *   updatedAt: Date
+ *   updatedAt: Date,
+ *   closedAt: Date | null,
+ *   closedBy: 'agent' | 'customer' | null
  * }
  */
 export const conversations = new Map();
@@ -113,8 +116,11 @@ export function findOrCreateConversation(customerId, detectedLocale) {
     language: languageCode,
     customerLocale: detectedLocale,
     messages: [],
+    status: "active",
     createdAt: new Date(),
     updatedAt: new Date(),
+    closedAt: null,
+    closedBy: null,
   };
 
   conversations.set(id, conversation);
