@@ -15,7 +15,6 @@ const App = () => {
   };
 
   if (path.startsWith("/agent")) {
-    // Show language selector if no language selected
     if (!agentLanguage) {
       return <LanguageSelector onSelect={handleLanguageSelect} />;
     }
@@ -27,13 +26,13 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-8">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-12 animate-[fadeIn_0.6s_ease-out]">
-          <div className="inline-block mb-6">
-            <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center px-4 py-8 sm:p-8">
+      <div className="max-w-5xl w-full">
+        <div className="text-center mb-10 sm:mb-12 animate-[fadeIn_0.6s_ease-out]">
+          <div className="inline-block mb-5 sm:mb-6">
+            <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-lg border border-indigo-100">
               <svg
-                className="w-8 h-8 text-indigo-600"
+                className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -45,36 +44,36 @@ const App = () => {
                   d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
                 />
               </svg>
-              <span className="text-xl font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 Lebab
               </span>
             </div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-900 mb-4 tracking-tight leading-tight">
             Language Mediation
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600 mt-2">
               Made Seamless
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-2">
             Enable your support team to work entirely in English while
             seamlessly handling customer messages in any language
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 animate-[slideUp_0.8s_ease-out_0.2s_both]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 animate-[slideUp_0.8s_ease-out_0.2s_both]">
           <a
             href="/agent"
-            className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 hover:border-indigo-300 overflow-hidden"
+            className="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 hover:border-indigo-300 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div className="relative">
-              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center mb-5 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-7 h-7 sm:w-8 sm:h-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -88,11 +87,11 @@ const App = () => {
                 </svg>
               </div>
 
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-3">
                 Agent Workspace
               </h3>
 
-              <p className="text-slate-600 mb-4 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-600 mb-4 leading-relaxed">
                 Access the unified inbox where all customer conversations are
                 automatically translated into English
               </p>
@@ -118,14 +117,14 @@ const App = () => {
 
           <a
             href="/customer"
-            className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 hover:border-blue-300 overflow-hidden"
+            className="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 hover:border-blue-300 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div className="relative">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-5 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-7 h-7 sm:w-8 sm:h-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -139,11 +138,11 @@ const App = () => {
                 </svg>
               </div>
 
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-3">
                 Customer Panel
               </h3>
 
-              <p className="text-slate-600 mb-4 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-600 mb-4 leading-relaxed">
                 Simulate customer messages in any language to test the
                 translation and mediation workflow
               </p>
@@ -168,8 +167,8 @@ const App = () => {
           </a>
         </div>
 
-        <div className="mt-12 text-center animate-[fadeIn_1s_ease-out_0.4s_both]">
-          <div className="inline-flex items-center gap-2 text-sm text-slate-500 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full">
+        <div className="mt-10 sm:mt-12 text-center animate-[fadeIn_1s_ease-out_0.4s_both]">
+          <div className="inline-flex items-center gap-2 text-xs sm:text-sm text-slate-500 bg-white/60 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             Demo Environment Active
           </div>

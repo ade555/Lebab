@@ -78,10 +78,12 @@ const Inbox = ({ agentLanguage }) => {
   return (
     <div className="flex h-screen bg-slate-50">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+      <div
+        className={`${activeId ? "hidden md:flex" : "flex"} w-full md:w-80 bg-white md:border-r border-slate-200 flex-col`}
+      >
         {/* Header */}
-        <div className="p-6 border-b border-slate-200">
-          <div className="flex items-center gap-3 mb-6">
+        <div className="p-4 md:p-6 border-b border-slate-200">
+          <div className="flex items-center gap-3 mb-4 md:mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
@@ -208,7 +210,7 @@ const Inbox = ({ agentLanguage }) => {
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <div
                           className={`w-2 h-2 rounded-full ${c.id === activeId ? "bg-indigo-500" : "bg-slate-300"}`}
                         />
@@ -235,7 +237,7 @@ const Inbox = ({ agentLanguage }) => {
                         )}
                       </div>
                       <svg
-                        className={`w-4 h-4 transition-colors ${
+                        className={`w-4 h-4 transition-colors flex-shrink-0 ${
                           c.id === activeId
                             ? "text-indigo-400"
                             : "text-slate-300 group-hover:text-slate-400"
@@ -309,7 +311,9 @@ const Inbox = ({ agentLanguage }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div
+        className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col`}
+      >
         {activeId ? (
           <Conversation
             conversationId={activeId}
@@ -317,7 +321,7 @@ const Inbox = ({ agentLanguage }) => {
           />
         ) : (
           <div className="flex-1 flex items-center justify-center bg-slate-50">
-            <div className="text-center">
+            <div className="text-center px-4">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-10 h-10 text-slate-400"

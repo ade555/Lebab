@@ -175,9 +175,9 @@ export default function CustomerChat() {
     <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               {/* Back button */}
               {conversationId && (
                 <button
@@ -201,9 +201,9 @@ export default function CustomerChat() {
                 </button>
               )}
 
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center shadow-md">
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-5 h-5 md:w-6 md:h-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -217,7 +217,7 @@ export default function CustomerChat() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-slate-900">
+                <h1 className="text-base md:text-lg font-bold text-slate-900">
                   Support Chat
                 </h1>
                 <div className="flex items-center gap-1.5">
@@ -234,22 +234,27 @@ export default function CustomerChat() {
                 <>
                   <button
                     onClick={handleStartNewConversation}
-                    className="text-xs text-slate-500 hover:text-slate-700 font-medium px-3 py-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="hidden sm:block text-xs text-slate-500 hover:text-slate-700 font-medium px-3 py-1.5 hover:bg-slate-100 rounded-lg transition-colors"
                   >
                     Start new chat
                   </button>
                   <button
                     onClick={handleEndConversation}
                     disabled={isEnding}
-                    className="text-xs text-red-600 hover:text-red-700 font-medium px-3 py-1.5 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+                    className="text-xs text-red-600 hover:text-red-700 font-medium px-2 sm:px-3 py-1.5 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
                   >
-                    {isEnding ? "Ending..." : "End conversation"}
+                    <span className="hidden sm:inline">
+                      {isEnding ? "Ending..." : "End conversation"}
+                    </span>
+                    <span className="sm:hidden">
+                      {isEnding ? "..." : "End"}
+                    </span>
                   </button>
                 </>
               )}
 
               {conversationStatus !== "active" && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-lg">
+                <div className="flex items-center gap-1.5 px-2 md:px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-lg">
                   <svg
                     className="w-3.5 h-3.5 text-slate-600"
                     fill="none"
@@ -275,12 +280,12 @@ export default function CustomerChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-6">
           {messages.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="text-center py-8 md:py-12">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <svg
-                  className="w-8 h-8 text-blue-500"
+                  className="w-7 h-7 md:w-8 md:h-8 text-blue-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -293,10 +298,10 @@ export default function CustomerChat() {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-2">
                 Welcome to Support Chat
               </h3>
-              <p className="text-slate-600 mb-6">
+              <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6 px-4">
                 Type a message in any language to get started
               </p>
 
@@ -311,7 +316,7 @@ export default function CustomerChat() {
                   <button
                     key={i}
                     onClick={() => setText(msg.text)}
-                    className="text-sm px-4 py-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-lg transition-all shadow-sm"
+                    className="text-xs md:text-sm px-3 md:px-4 py-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-lg transition-all shadow-sm"
                   >
                     <span className="font-semibold text-blue-600">
                       {msg.lang}:
@@ -322,7 +327,7 @@ export default function CustomerChat() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {messages.map((m, i) => {
                 const isCustomer = m.role === "customer";
                 // Customers see their original text, but agent replies translated
@@ -336,16 +341,16 @@ export default function CustomerChat() {
                     className={`flex ${isCustomer ? "justify-end" : "justify-start"} animate-[slideIn_0.3s_ease-out]`}
                   >
                     <div
-                      className={`max-w-lg ${isCustomer ? "order-2" : "order-1"}`}
+                      className={`max-w-[85%] sm:max-w-md md:max-w-lg ${isCustomer ? "order-2" : "order-1"}`}
                     >
                       {/* Message Header */}
                       <div
-                        className={`flex items-center gap-2 mb-2 ${isCustomer ? "justify-end" : "justify-start"}`}
+                        className={`flex items-center gap-2 mb-1.5 md:mb-2 ${isCustomer ? "justify-end" : "justify-start"}`}
                       >
                         {!isCustomer && (
-                          <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 md:w-7 md:h-7 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-full flex items-center justify-center">
                             <svg
-                              className="w-4 h-4 text-white"
+                              className="w-3.5 h-3.5 md:w-4 md:h-4 text-white"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -363,9 +368,9 @@ export default function CustomerChat() {
                           {isCustomer ? "You" : "Support Agent"}
                         </span>
                         {isCustomer && (
-                          <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 md:w-7 md:h-7 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center">
                             <svg
-                              className="w-4 h-4 text-white"
+                              className="w-3.5 h-3.5 md:w-4 md:h-4 text-white"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -383,13 +388,13 @@ export default function CustomerChat() {
 
                       {/* Message Bubble */}
                       <div
-                        className={`rounded-2xl px-4 py-3 shadow-sm ${
+                        className={`rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-sm ${
                           isCustomer
                             ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white"
                             : "bg-white text-slate-900 border border-slate-200"
                         }`}
                       >
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
                           {displayText}
                         </p>
                       </div>
@@ -405,7 +410,7 @@ export default function CustomerChat() {
 
       {/* Input Area */}
       <div className="bg-white border-t border-slate-200 shadow-lg">
-        <div className="max-w-4xl mx-auto px-6 py-4">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 md:py-4">
           {conversationStatus === "active" ? (
             <>
               <div className="bg-slate-50 rounded-xl border border-slate-200 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
@@ -414,18 +419,18 @@ export default function CustomerChat() {
                   onChange={(e) => setText(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message... (Press Enter to send)"
-                  className="w-full px-4 py-3 bg-transparent text-slate-900 placeholder-slate-400 resize-none focus:outline-none text-sm leading-relaxed"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent text-slate-900 placeholder-slate-400 resize-none focus:outline-none text-sm leading-relaxed"
                   rows={3}
                   disabled={isSending}
                 />
 
-                <div className="flex items-center justify-between px-4 pb-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between px-3 md:px-4 pb-2 md:pb-3 gap-2">
+                  <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                     <div className="text-xs text-slate-500">
                       <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700 font-mono text-xs">
                         Enter
                       </kbd>
-                      {" to send"}
+                      <span className="hidden sm:inline"> to send</span>
                     </div>
 
                     {conversationId && (
@@ -448,12 +453,22 @@ export default function CustomerChat() {
                         </span>
                       </div>
                     )}
+
+                    {/* Mobile: Start new chat button */}
+                    {conversationId && conversationStatus === "active" && (
+                      <button
+                        onClick={handleStartNewConversation}
+                        className="sm:hidden text-xs text-slate-500 hover:text-slate-700 font-medium px-2 py-1 hover:bg-slate-100 rounded-lg transition-colors"
+                      >
+                        New chat
+                      </button>
+                    )}
                   </div>
 
                   <button
                     onClick={send}
                     disabled={!text.trim() || isSending}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg font-medium text-sm hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+                    className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg font-medium text-sm hover:from-blue-600 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md flex-shrink-0"
                   >
                     {isSending ? (
                       <>
@@ -476,11 +491,11 @@ export default function CustomerChat() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
                         </svg>
-                        Sending...
+                        <span className="hidden sm:inline">Sending...</span>
                       </>
                     ) : (
                       <>
-                        Send
+                        <span className="hidden sm:inline">Send</span>
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -501,10 +516,10 @@ export default function CustomerChat() {
               </div>
             </>
           ) : (
-            <div className="text-center py-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg">
+            <div className="text-center py-4 md:py-6">
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg">
                 <svg
-                  className="w-5 h-5 text-slate-500"
+                  className="w-4 md:w-5 h-4 md:h-5 text-slate-500 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -516,11 +531,13 @@ export default function CustomerChat() {
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-xs md:text-sm font-medium text-slate-700">
                   This conversation is {conversationStatus}.{" "}
-                  {conversationStatus === "escalated"
-                    ? "We will get back to you with an update soon!"
-                    : "You can no longer send messages."}
+                  <span className="hidden sm:inline">
+                    {conversationStatus === "escalated"
+                      ? "We will get back to you with an update soon!"
+                      : "You can no longer send messages."}
+                  </span>
                 </span>
               </div>
             </div>
