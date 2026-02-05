@@ -29,7 +29,8 @@ export function initializeAgentSocket() {
 
   agentSocket.on("connect", () => {
     console.log("[WebSocket] Connected to server");
-    agentSocket.emit("agent_join");
+    const language = localStorage.getItem("agentLanguage") || "en";
+    agentSocket.emit("agent_join", { language });
   });
 
   agentSocket.on("disconnect", () => {

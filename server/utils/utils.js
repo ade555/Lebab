@@ -136,3 +136,11 @@ export function getLastMessagePreview(conversation) {
   const lastMessage = conversation.messages[conversation.messages.length - 1];
   return lastMessage.translated_text.substring(0, 80);
 }
+
+// Agent's language
+export let currentAgentLanguage = "en";
+
+export function setAgentLanguage(language) {
+  currentAgentLanguage = language;
+  console.log("[Agent Language Updated]", currentAgentLanguage);
+}

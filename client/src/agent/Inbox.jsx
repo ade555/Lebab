@@ -6,7 +6,7 @@ import {
 } from "../api";
 import Conversation from "./Conversation";
 
-export default function Inbox() {
+const Inbox = ({ agentLanguage }) => {
   const [conversations, setConversations] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +55,26 @@ export default function Inbox() {
     setActiveId(null);
   };
 
+  // Language selector
+  const getLanguageName = (code) => {
+    const languages = {
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      zh: "Chinese",
+      ja: "Japanese",
+      ar: "Arabic",
+      pt: "Portuguese",
+    };
+    return languages[code] || code;
+  };
+
+  const handleChangeLanguage = () => {
+    localStorage.removeItem("agentLanguage");
+    window.location.reload();
+  };
+
   return (
     <div className="flex h-screen bg-slate-50">
       {/* Sidebar */}
@@ -81,6 +101,33 @@ export default function Inbox() {
               <h1 className="text-lg font-bold text-slate-900">Lebab</h1>
               <p className="text-xs text-slate-500">Agent Workspace</p>
             </div>
+          </div>
+
+          <div className="mb-4 flex items-center justify-between px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-4 h-4 text-indigo-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+                />
+              </svg>
+              <span className="text-sm font-medium text-indigo-900">
+                {getLanguageName(agentLanguage)}
+              </span>
+            </div>
+            <button
+              onClick={handleChangeLanguage}
+              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              Change
+            </button>
           </div>
 
           <div className="relative">
@@ -298,4 +345,5 @@ export default function Inbox() {
       </div>
     </div>
   );
-}
+};
+export default Inbox;

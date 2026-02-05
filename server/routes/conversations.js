@@ -5,6 +5,7 @@ import {
   conversations,
   customerSessions,
   saveConversations,
+  currentAgentLanguage,
 } from "../utils/utils.js";
 
 const router = express.Router();
@@ -106,10 +107,11 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       }
 
       console.log("[Agent Reply Received]", text);
+      console.log("[Agent Language]", currentAgentLanguage);
 
-      // Step 1: Translate agent's English reply to customer's language
+      // Translate agent's language reply to customer's language
       const translationResult = await lingoDotDev.localizeText(text, {
-        sourceLocale: "en",
+        sourceLocale: currentAgentLanguage,
         targetLocale: conversation.customerLocale,
       });
       const translatedText = translationResult;
@@ -118,7 +120,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
         translatedText,
       );
 
-      // Step 2: Add message to conversation
+      // Add message to conversation
       const message = {
         role: "agent",
         original_text: text,
@@ -131,7 +133,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
 
       await saveConversations();
 
-      // Step 3: Emit to connected clients
+      // Emit to connected clients
       io.to(`customer-${conversation.customerId}`).emit("agent_reply", {
         conversationId: conversation.id,
         message,
@@ -307,21 +309,20 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       console.log("[Customer Message Received]", text);
       console.log("[Customer ID]", effectiveCustomerId);
 
-      // Step 1: Detect the customer's language
+      // Detect the customer's language
       const detectedLocale = await lingoDotDev.recognizeLocale(text);
       console.log("[Language Detected]", detectedLocale);
 
-      // Step 2: Translate to English for agent
+      // Translate to English for agent
       const translationResult = await lingoDotDev.localizeText(text, {
         sourceLocale: detectedLocale,
-        targetLocale: "en",
+        targetLocale: currentAgentLanguage,
       });
       console.log("[Translation Result]", translationResult);
       const translatedText = translationResult;
       console.log("[Translated to English]", translatedText);
 
-      // Step 3: Find or create conversation
-      // Find or create conversation for this customer
+      // Find or create conversation
       const conversation = findOrCreateConversation(
         effectiveCustomerId,
         detectedLocale,
@@ -334,7 +335,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
         });
       }
 
-      // Step 4: Add message to conversation
+      // Add message to conversation
       const message = {
         role: "customer",
         original_text: text,
@@ -347,7 +348,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
 
       await saveConversations();
 
-      // Step 5: Emit to connected agent clients via WebSocket
+      // Emit to connected agent clients via WebSocket
       io.to("agents").emit("new_message", {
         conversationId: conversation.id,
         message,
@@ -376,6 +377,14 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
         details: error.message,
       });
     }
+  });
+
+  /**
+   * GET api/agent-language
+   * Returns the agent's language
+   */
+  router.get("/agent-language", (req, res) => {
+    res.json({ language: currentAgentLanguage });
   });
 
   return router;

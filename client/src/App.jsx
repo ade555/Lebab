@@ -1,11 +1,25 @@
+import { useState } from "react";
 import Inbox from "./agent/Inbox";
 import CustomerChat from "./customer/CustomerChat";
+import LanguageSelector from "./utils/LanguageSelector";
 
-function App() {
+const App = () => {
   const path = window.location.pathname;
+  const [agentLanguage, setAgentLanguage] = useState(
+    localStorage.getItem("agentLanguage") || null,
+  );
+
+  const handleLanguageSelect = (lang) => {
+    setAgentLanguage(lang);
+    localStorage.setItem("agentLanguage", lang);
+  };
 
   if (path.startsWith("/agent")) {
-    return <Inbox />;
+    // Show language selector if no language selected
+    if (!agentLanguage) {
+      return <LanguageSelector onSelect={handleLanguageSelect} />;
+    }
+    return <Inbox agentLanguage={agentLanguage} />;
   }
 
   if (path.startsWith("/customer")) {
@@ -185,6 +199,6 @@ function App() {
       `}</style>
     </div>
   );
-}
+};
 
 export default App;

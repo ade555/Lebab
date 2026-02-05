@@ -5,8 +5,6 @@ import {
   initializeCustomerSocket,
   startNewConversation,
   getCurrentCustomerId,
-  onConversationEnded,
-  onConversationEscalated,
   endConversation,
 } from "../api";
 

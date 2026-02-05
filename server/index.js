@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import conversationsRoutes from "./routes/conversations.js";
 import { loadConversations } from "./utils/utils.js";
+import { setAgentLanguage } from "./utils/utils.js";
 
 dotenv.config();
 
@@ -42,9 +43,12 @@ io.on("connection", (socket) => {
     socket.join("customers");
     socket.join(`customer-${customerId}`);
   });
-  socket.on("agent_join", () => {
-    console.log("[WebSocket] Agent joined:", socket.id);
+  socket.on("agent_join", ({ language }) => {
+    console.log("[WebSocket] Agent joined:", socket.id, "Language:", language);
     socket.join("agents");
+    if (language) {
+      setAgentLanguage(language);
+    }
   });
 
   socket.on("disconnect", () => {

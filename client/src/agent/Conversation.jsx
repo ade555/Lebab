@@ -8,7 +8,7 @@ import {
 } from "../api";
 import ReplyBox from "./ReplyBox";
 
-export default function Conversation({ conversationId, onClose }) {
+const Conversation = ({ conversationId, onClose }) => {
   const [messages, setMessages] = useState([]);
   const [showOriginal, setShowOriginal] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -394,4 +394,5 @@ export default function Conversation({ conversationId, onClose }) {
       `}</style>
     </div>
   );
-}
+};
+export default Conversation;
