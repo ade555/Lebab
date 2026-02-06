@@ -58,8 +58,8 @@ const App = () => {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-2">
-            Enable your support team to work entirely in English while
-            seamlessly handling customer messages in any language
+            Enable your support team to work entirely in their preferred
+            language while seamlessly handling customer messages in any language
           </p>
         </div>
 

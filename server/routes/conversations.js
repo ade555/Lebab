@@ -79,7 +79,7 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
 
   /**
    * POST /api/conversations/:id/reply
-   * Agent sends a reply in English
+   * Agent sends a reply in their language
    *
    * Body: { text: string }
    */
@@ -313,14 +313,14 @@ export default function conversationsRoutes({ io, lingoDotDev }) {
       const detectedLocale = await lingoDotDev.recognizeLocale(text);
       console.log("[Language Detected]", detectedLocale);
 
-      // Translate to English for agent
+      // Translate to agent's preferred language
       const translationResult = await lingoDotDev.localizeText(text, {
         sourceLocale: detectedLocale,
         targetLocale: currentAgentLanguage,
       });
       console.log("[Translation Result]", translationResult);
       const translatedText = translationResult;
-      console.log("[Translated to English]", translatedText);
+      console.log("[Translated to agent's language]", translatedText);
 
       // Find or create conversation
       const conversation = findOrCreateConversation(

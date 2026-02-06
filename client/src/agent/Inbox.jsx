@@ -11,6 +11,13 @@ const Inbox = ({ agentLanguage }) => {
   const [activeId, setActiveId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  async function loadConversations() {
+    setIsLoading(true);
+    const data = await fetchConversations();
+    setConversations(data);
+    setIsLoading(false);
+  }
+
   useEffect(() => {
     // Initialize WebSocket connection
     initializeAgentSocket();
@@ -45,12 +52,6 @@ const Inbox = ({ agentLanguage }) => {
     return cleanup;
   }, [activeId]);
 
-  async function loadConversations() {
-    setIsLoading(true);
-    const data = await fetchConversations();
-    setConversations(data);
-    setIsLoading(false);
-  }
   const handleCloseConversation = () => {
     setActiveId(null);
   };

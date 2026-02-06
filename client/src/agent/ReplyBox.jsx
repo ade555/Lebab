@@ -34,7 +34,7 @@ export default function ReplyBox({ conversationId, onReplySent }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Type your reply in English... (Press Enter to send, Shift+Enter for new line)"
+          placeholder="Type your reply... (Press Enter to send, Shift+Enter for new line)"
           className="w-full px-4 py-3 bg-transparent text-slate-900 placeholder-slate-400 resize-none focus:outline-none text-sm leading-relaxed"
           rows={3}
           disabled={isSending}

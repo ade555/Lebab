@@ -26,6 +26,10 @@ Built with React, Node.js, and Socket.IO, the system automatically detects custo
 6. **System** translates the reply back to customer's language
 7. **Customer** receives the reply in their original language
 
+### Video Demo
+
+You can see a demo of how it works on [Youtube](https://youtu.be/TCaHfSHZ-BM)
+
 ## Key Features
 
 - Automatic language detection
