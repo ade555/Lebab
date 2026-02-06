@@ -85,25 +85,6 @@ export default function ReplyBox({ conversationId, onReplySent }) {
             </button>
 
             <div className="h-5 w-px bg-slate-300" />
-
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-50 border border-indigo-200 rounded-lg">
-              <svg
-                className="w-3.5 h-3.5 text-indigo-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              <span className="text-xs font-medium text-indigo-700">
-                Auto-translate ON
-              </span>
-            </div>
           </div>
 
           <button

@@ -215,14 +215,7 @@ const Conversation = ({ conversationId, onClose }) => {
           </div>
         </div>
 
-        {/* Auto-translate badge - visible on mobile */}
         <div className="flex items-center gap-2 mt-2 md:hidden">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-xs font-medium text-green-700">
-              Auto-translate active
-            </span>
-          </div>
           {conversationStatus === "active" && (
             <button
               onClick={handleEscalate}
@@ -233,7 +226,7 @@ const Conversation = ({ conversationId, onClose }) => {
           )}
         </div>
 
-        {/* Desktop back button and auto-translate */}
+        {/* Desktop back button */}
         <div className="hidden md:flex items-center gap-2 mt-3">
           <button
             onClick={onClose}
@@ -254,12 +247,6 @@ const Conversation = ({ conversationId, onClose }) => {
               />
             </svg>
           </button>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-xs font-medium text-green-700">
-              Auto-translate active
-            </span>
-          </div>
         </div>
       </div>
 

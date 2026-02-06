@@ -93,7 +93,7 @@ const App = () => {
 
               <p className="text-sm sm:text-base text-slate-600 mb-4 leading-relaxed">
                 Access the unified inbox where all customer conversations are
-                automatically translated into English
+                automatically translated to your preferred language.
               </p>
 
               <div className="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform duration-300">
@@ -165,13 +165,6 @@ const App = () => {
               </div>
             </div>
           </a>
-        </div>
-
-        <div className="mt-10 sm:mt-12 text-center animate-[fadeIn_1s_ease-out_0.4s_both]">
-          <div className="inline-flex items-center gap-2 text-xs sm:text-sm text-slate-500 bg-white/60 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            Demo Environment Active
-          </div>
         </div>
       </div>
 
